@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Container from "@/components/Container";
 import SectionHeading from "@/components/SectionHeading";
 import Button from "@/components/Button";
@@ -73,7 +74,14 @@ export default function Home() {
 
           <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-12 lg:grid-cols-[380px_1fr] lg:items-center lg:gap-20">
             <Reveal>
-              <div className="mx-auto aspect-[4/5] w-full max-w-[380px] border border-navy/15 bg-navy/[0.03] lg:mx-0" />
+              <div className="relative mx-auto aspect-[4/5] w-full max-w-[380px] overflow-hidden lg:mx-0">
+                <Image
+                  src="/images/svilena-portrait.jpg"
+                  alt="Свилена Николова"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </Reveal>
 
             <Reveal delay={150} className="space-y-5 text-base leading-relaxed text-ink/75">
