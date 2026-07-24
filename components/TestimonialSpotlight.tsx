@@ -10,7 +10,9 @@ export default function TestimonialSpotlight({
 }: {
   testimonials: Testimonial[];
 }) {
-  const { index, goTo } = useAutoSlideshow(testimonials.length);
+  const { index, goTo, handleTouchStart, handleTouchEnd } = useAutoSlideshow(
+    testimonials.length,
+  );
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowLeft") {
@@ -41,7 +43,11 @@ export default function TestimonialSpotlight({
           &larr;
         </button>
 
-        <div className="relative min-h-[260px] w-full max-w-2xl sm:min-h-[300px]">
+        <div
+          className="relative min-h-[260px] w-full max-w-2xl touch-pan-y sm:min-h-[300px]"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {testimonials.map((testimonial, i) => (
             <div
               key={i}

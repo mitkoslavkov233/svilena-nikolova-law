@@ -10,7 +10,9 @@ export default function PracticeAreaSlideshow({
 }: {
   areas: PracticeArea[];
 }) {
-  const { index, goTo } = useAutoSlideshow(areas.length);
+  const { index, goTo, handleTouchStart, handleTouchEnd } = useAutoSlideshow(
+    areas.length,
+  );
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowLeft") {
@@ -41,7 +43,11 @@ export default function PracticeAreaSlideshow({
           &larr;
         </button>
 
-        <div className="relative h-80 w-full sm:h-96">
+        <div
+          className="relative h-80 w-full touch-pan-y sm:h-96"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {areas.map((area, i) => (
             <Link
               key={area.slug}
