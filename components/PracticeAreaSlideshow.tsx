@@ -65,7 +65,7 @@ export default function PracticeAreaSlideshow({
               }}
               className="group absolute left-1/2 top-0 flex h-full w-64 flex-col overflow-hidden bg-navy p-8 transition-[transform,opacity,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-navy-dark sm:w-80 sm:p-10"
             >
-              <span className="font-serif text-7xl leading-none text-cream/10">
+              <span className="font-serif text-7xl leading-none text-gold-light/40">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-auto font-serif text-2xl font-semibold text-cream sm:text-3xl">
