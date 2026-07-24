@@ -1,8 +1,8 @@
 "use client";
 
-import { KeyboardEvent } from "react";
+import { KeyboardEvent, MouseEvent } from "react";
 import Container from "@/components/Container";
-import { useAutoSlideshow } from "@/lib/useAutoSlideshow";
+import { getSlideOffset, useAutoSlideshow } from "@/lib/useAutoSlideshow";
 import { Testimonial } from "@/lib/data";
 
 export default function TestimonialSpotlight({
@@ -33,87 +33,54 @@ export default function TestimonialSpotlight({
       onKeyDown={handleKeyDown}
       className="bg-navy py-24 outline-none focus-visible:ring-2 focus-visible:ring-gold-light/50 sm:py-32"
     >
-      <Container className="flex items-center justify-center gap-4 sm:gap-10">
-        <button
-          type="button"
-          onClick={() => goTo(index - 1)}
-          aria-label="Предишен отзив"
-          className="hidden shrink-0 text-2xl text-gold-light transition-colors hover:text-cream sm:block"
-        >
-          &larr;
-        </button>
-
+      <Container>
         <div
-          className="relative min-h-[260px] w-full max-w-2xl touch-pan-y sm:min-h-[300px]"
+          className="relative h-80 touch-pan-y overflow-hidden sm:h-72"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          {testimonials.map((testimonial, i) => (
-            <div
-              key={i}
-              aria-hidden={i !== index}
-              className={`absolute inset-0 flex flex-col items-center text-center transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                i === index ? "z-10 opacity-100" : "z-0 opacity-0"
-              }`}
-            >
-              <div className="mb-6 flex justify-center gap-1 text-gold-light">
-                {Array.from({ length: 5 }).map((_, s) => (
-                  <span key={s}>&#9733;</span>
-                ))}
+          {testimonials.map((testimonial, i) => {
+            const offset = getSlideOffset(i, index, testimonials.length);
+            const isActive = offset === 0;
+            const isVisible = Math.abs(offset) <= 1;
+
+            const handleClick = (e: MouseEvent) => {
+              if (!isActive) {
+                e.preventDefault();
+                goTo(i);
+              }
+            };
+
+            return (
+              <div
+                key={i}
+                onClick={handleClick}
+                aria-hidden={!isActive}
+                style={{
+                  transform: `translate(-50%, 0) translateX(${offset * 106}%) scale(${isActive ? 1 : 0.85})`,
+                  opacity: isVisible ? (isActive ? 1 : 0.45) : 0,
+                  zIndex: 10 - Math.abs(offset),
+                  pointerEvents: isVisible ? "auto" : "none",
+                  cursor: isActive ? "default" : "pointer",
+                }}
+                className="absolute left-1/2 top-0 flex h-full w-72 flex-col border border-cream/15 bg-cream/[0.04] p-8 text-center transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:w-[26rem]"
+              >
+                <div className="flex justify-center gap-1 text-gold-light">
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <span key={s}>&#9733;</span>
+                  ))}
+                </div>
+                <blockquote className="mt-6 flex-1 font-serif text-lg leading-relaxed text-cream sm:text-xl">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </blockquote>
+                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-gold-light">
+                  {testimonial.role}
+                </p>
               </div>
-              <blockquote className="font-serif text-2xl leading-relaxed text-balance text-cream sm:text-3xl">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-gold-light">
-                {testimonial.role}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
-
-        <button
-          type="button"
-          onClick={() => goTo(index + 1)}
-          aria-label="Следващ отзив"
-          className="hidden shrink-0 text-2xl text-gold-light transition-colors hover:text-cream sm:block"
-        >
-          &rarr;
-        </button>
       </Container>
-
-      <div className="mt-10 flex justify-center gap-4 sm:hidden">
-        <button
-          type="button"
-          onClick={() => goTo(index - 1)}
-          aria-label="Предишен отзив"
-          className="text-2xl text-gold-light"
-        >
-          &larr;
-        </button>
-        <button
-          type="button"
-          onClick={() => goTo(index + 1)}
-          aria-label="Следващ отзив"
-          className="text-2xl text-gold-light"
-        >
-          &rarr;
-        </button>
-      </div>
-
-      <div className="mt-8 flex justify-center gap-2">
-        {testimonials.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => goTo(i)}
-            aria-label={`Отзив ${i + 1}`}
-            aria-current={i === index}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === index ? "w-6 bg-gold-light" : "w-2 bg-cream/30 hover:bg-cream/50"
-            }`}
-          />
-        ))}
-      </div>
     </section>
   );
 }

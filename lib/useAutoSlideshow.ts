@@ -51,3 +51,12 @@ export function useAutoSlideshow(count: number, intervalMs = 5000) {
 
   return { index, goTo, handleTouchStart, handleTouchEnd };
 }
+
+// Shortest-path distance from `i` to the active `index` on a looping track,
+// e.g. with count=4: index=0 → item 3 is -1 away, not +3.
+export function getSlideOffset(i: number, index: number, count: number) {
+  let offset = i - index;
+  if (offset > count / 2) offset -= count;
+  if (offset < -count / 2) offset += count;
+  return offset;
+}

@@ -1,8 +1,8 @@
 "use client";
 
-import { KeyboardEvent } from "react";
+import { KeyboardEvent, MouseEvent } from "react";
 import Link from "next/link";
-import { useAutoSlideshow } from "@/lib/useAutoSlideshow";
+import { getSlideOffset, useAutoSlideshow } from "@/lib/useAutoSlideshow";
 import { PracticeArea } from "@/lib/data";
 
 export default function PracticeAreaSlideshow({
@@ -33,32 +33,37 @@ export default function PracticeAreaSlideshow({
       onKeyDown={handleKeyDown}
       className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
     >
-      <div className="flex items-center gap-4 sm:gap-8">
-        <button
-          type="button"
-          onClick={() => goTo(index - 1)}
-          aria-label="Предишна практика"
-          className="hidden shrink-0 text-2xl text-gold transition-colors hover:text-navy sm:block"
-        >
-          &larr;
-        </button>
+      <div
+        className="relative h-80 touch-pan-y overflow-hidden sm:h-96"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {areas.map((area, i) => {
+          const offset = getSlideOffset(i, index, areas.length);
+          const isActive = offset === 0;
+          const isVisible = Math.abs(offset) <= 1;
 
-        <div
-          className="relative h-80 w-full touch-pan-y sm:h-96"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {areas.map((area, i) => (
+          const handleClick = (e: MouseEvent) => {
+            if (!isActive) {
+              e.preventDefault();
+              goTo(i);
+            }
+          };
+
+          return (
             <Link
               key={area.slug}
               href={`/praktika#${area.slug}`}
-              aria-hidden={i !== index}
-              tabIndex={i === index ? 0 : -1}
-              className={`group absolute inset-0 flex flex-col overflow-hidden bg-navy p-10 transition-[opacity,background-color] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-navy-dark ${
-                i === index
-                  ? "z-10 opacity-100"
-                  : "pointer-events-none z-0 opacity-0"
-              }`}
+              onClick={handleClick}
+              aria-hidden={!isActive}
+              tabIndex={isActive ? 0 : -1}
+              style={{
+                transform: `translate(-50%, 0) translateX(${offset * 108}%) scale(${isActive ? 1 : 0.85})`,
+                opacity: isVisible ? (isActive ? 1 : 0.55) : 0,
+                zIndex: 10 - Math.abs(offset),
+                pointerEvents: isVisible ? "auto" : "none",
+              }}
+              className="group absolute left-1/2 top-0 flex h-full w-64 flex-col overflow-hidden bg-navy p-8 transition-[transform,opacity,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-navy-dark sm:w-80 sm:p-10"
             >
               <span className="font-serif text-7xl leading-none text-cream/10">
                 {String(i + 1).padStart(2, "0")}
@@ -76,51 +81,8 @@ export default function PracticeAreaSlideshow({
                 </span>
               </span>
             </Link>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => goTo(index + 1)}
-          aria-label="Следваща практика"
-          className="hidden shrink-0 text-2xl text-gold transition-colors hover:text-navy sm:block"
-        >
-          &rarr;
-        </button>
-      </div>
-
-      <div className="mt-8 flex items-center justify-center gap-4 sm:hidden">
-        <button
-          type="button"
-          onClick={() => goTo(index - 1)}
-          aria-label="Предишна практика"
-          className="text-2xl text-gold"
-        >
-          &larr;
-        </button>
-        <button
-          type="button"
-          onClick={() => goTo(index + 1)}
-          aria-label="Следваща практика"
-          className="text-2xl text-gold"
-        >
-          &rarr;
-        </button>
-      </div>
-
-      <div className="mt-8 flex justify-center gap-2">
-        {areas.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => goTo(i)}
-            aria-label={`Практика ${i + 1}`}
-            aria-current={i === index}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === index ? "w-6 bg-gold" : "w-2 bg-navy/20 hover:bg-navy/40"
-            }`}
-          />
-        ))}
+          );
+        })}
       </div>
     </div>
   );
