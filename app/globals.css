@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-navy: #00285a;
+  --color-navy-dark: #001b3d;
+  --color-navy-light: #0e3a73;
+  --color-gold: #8a7530;
+  --color-gold-light: #a8925a;
+  --color-cream: #f6f3eb;
+  --color-cream-dark: #ece6d6;
+  --color-ink: #1c2430;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-navy: #00285a;
+  --color-navy-dark: #001b3d;
+  --color-navy-light: #0e3a73;
+  --color-gold: #8a7530;
+  --color-gold-light: #a8925a;
+  --color-cream: #f6f3eb;
+  --color-cream-dark: #ece6d6;
+  --color-ink: #1c2430;
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-navy-dark);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Page-to-page view transition */
+::view-transition-old(.page-fade-out) {
+  animation: 150ms ease-in both page-fade-out;
+}
+::view-transition-new(.page-fade-in) {
+  animation: 250ms ease-out 100ms both page-fade-in;
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page-fade-out),
+  ::view-transition-new(.page-fade-in) {
+    animation-duration: 0s;
+  }
+}
+
+/* Scroll-driven hero parallax — no-op fallback in browsers without support */
+@supports (animation-timeline: view()) {
+  .hero-parallax-scope {
+    view-timeline-name: --hero-scroll;
+    view-timeline-axis: block;
+  }
+
+  .hero-parallax-layer {
+    animation: hero-parallax linear both;
+    animation-timeline: --hero-scroll;
+    animation-range: cover 0% cover 100%;
+  }
+
+  @keyframes hero-parallax {
+    from {
+      transform: translateY(-6%);
+    }
+    to {
+      transform: translateY(6%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-parallax-layer {
+      animation: none;
+    }
+  }
 }
